@@ -1,6 +1,9 @@
 package com.spring.jwttutorial.jwt;
 
 import com.spring.jwttutorial.dto.CustomUserDetails;
+import com.spring.jwttutorial.entity.RefreshEntity;
+import com.spring.jwttutorial.repository.RefreshRepository;
+import com.spring.jwttutorial.service.RefreshService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -22,10 +25,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
+    private final RefreshService refreshService;
 
-    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil) {
+    public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil, RefreshService refreshService) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.refreshService = refreshService;
     }
 
     //
@@ -61,7 +66,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         // 토큰 생성
         String access = jwtUtil.createJwt("access", username, role, 600000L);
-        String refresh = jwtUtil.createJwt("access", username, role, 600000L);
+        String refresh = jwtUtil.createJwt("refresh", username, role, 86400000L);
+
+        // db에 저장
+        refreshService.addRefresh(username, refresh, 86400000L);
 
         // 응답 설정
         response.setHeader("access", access);

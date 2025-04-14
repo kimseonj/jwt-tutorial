@@ -3,6 +3,7 @@ package com.spring.jwttutorial.config;
 import com.spring.jwttutorial.jwt.JWTFilter;
 import com.spring.jwttutorial.jwt.JWTUtil;
 import com.spring.jwttutorial.jwt.LoginFilter;
+import com.spring.jwttutorial.service.RefreshService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +28,7 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
+    private final RefreshService refreshService;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -86,7 +88,7 @@ public class SecurityConfig {
 
         // LoginFilter 등록 (필터에 /login URL 설정)
         http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshService), UsernamePasswordAuthenticationFilter.class);
 
         // session 설정 -> stateless로 변경
         http
