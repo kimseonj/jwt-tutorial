@@ -1,8 +1,6 @@
 package com.spring.jwttutorial.config;
 
-import com.spring.jwttutorial.jwt.JWTFilter;
-import com.spring.jwttutorial.jwt.JWTUtil;
-import com.spring.jwttutorial.jwt.LoginFilter;
+import com.spring.jwttutorial.jwt.*;
 import com.spring.jwttutorial.service.RefreshService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +14,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -75,6 +74,20 @@ public class SecurityConfig {
         http
                 .httpBasic(auth -> auth.disable());
 
+        /*
+        // LogoutHandler 사용
+        http
+                .logout(auth -> auth
+                        .permitAll()
+                        .addLogoutHandler(new LogoutHandler(refreshService, jwtUtil)));
+        */
+
+        // LogoutFilter 사용
+        http
+                .logout(auth -> auth.disable());
+        http
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshService), LogoutFilter.class);
+
         // 경로별 인가 작업
         http
                 .authorizeHttpRequests(auth -> auth
@@ -94,6 +107,10 @@ public class SecurityConfig {
         http
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+//        // LogoutFilter 등록
+//        http
+//                .addFilterBefore(new LogoutFilter(refreshService, jwtUtil), LogoutFilter.class);
 
         return http.build();
     }

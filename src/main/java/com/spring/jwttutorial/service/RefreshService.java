@@ -43,5 +43,8 @@ public class RefreshService {
         return true;
     }
 
-
+    @Transactional
+    public void removeRefresh(String refresh) {
+        refreshRepository.deleteByRefresh(refresh);
+    }
 }
