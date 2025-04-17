@@ -1,8 +1,6 @@
 package com.spring.jwttutorial.jwt;
 
 import com.spring.jwttutorial.dto.CustomUserDetails;
-import com.spring.jwttutorial.entity.RefreshEntity;
-import com.spring.jwttutorial.repository.RefreshRepository;
 import com.spring.jwttutorial.service.RefreshService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
